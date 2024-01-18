@@ -13,6 +13,10 @@ public class TicketServiceImpl implements TicketService {
      * Should only have private methods other than the one below.
      */
 
+    private static final int ADULT_TICKET_PRICE = 20;
+    private static final int CHILD_TICKET_PRICE=10;
+    private static final int MAX_PROCESSED_TICKET_LIMIT =20;
+
     @Override
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
        try{
@@ -25,6 +29,7 @@ public class TicketServiceImpl implements TicketService {
            }
 
            int[] totalPayAndSeats = calculateTotalPaymentAndSeats(ticketTypeRequests);
+
            TicketPaymentService ticketPaymentService = new TicketPaymentServiceImpl();
            ticketPaymentService.makePayment(accountId,totalPayAndSeats[0]);
 
@@ -38,6 +43,10 @@ public class TicketServiceImpl implements TicketService {
            throw new InvalidPurchaseException(e.getMessage());
        }
     }
+
+    /**
+     * This private method is used to calculate the total payment due and the number of seats to be reserved
+     */
 
     private int[] calculateTotalPaymentAndSeats(TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException{
         int adultCount=0,infantCount = 0, childCount = 0;
@@ -61,7 +70,7 @@ public class TicketServiceImpl implements TicketService {
             }
         }
         int totalTicketCount = adultCount+infantCount+childCount;
-        if(totalTicketCount>20){
+        if(totalTicketCount>MAX_PROCESSED_TICKET_LIMIT){
                throw new InvalidPurchaseException(Constants.EXCEEDS_MAX_TICKET_LIMIT);
            }
         else if (totalTicketCount==0){
@@ -72,14 +81,13 @@ public class TicketServiceImpl implements TicketService {
             throw new InvalidPurchaseException(Constants.ZERO_ADULT_TICKETS);
 
         }
-
         /*
           Added this condition assuming one adult can keep only one infant in his/her lap.
          */
         if (infantCount > adultCount) {
             throw new InvalidPurchaseException(Constants.MORE_INFANTS_THAN_ADULTS);
         }
-        return new int[]{adultCount*20+childCount*10, childCount + adultCount};
+        return new int[]{(adultCount * ADULT_TICKET_PRICE) + (childCount * CHILD_TICKET_PRICE) , childCount + adultCount};
     }
 
 }
