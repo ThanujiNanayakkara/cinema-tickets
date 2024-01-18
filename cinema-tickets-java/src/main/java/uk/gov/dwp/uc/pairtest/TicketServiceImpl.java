@@ -25,7 +25,7 @@ public class TicketServiceImpl implements TicketService {
                throw new InvalidPurchaseException(Constants.INVALID_ACCOUNT_ID);
            }
            if(ticketTypeRequests==null || ticketTypeRequests.length==0){
-               throw new InvalidPurchaseException(Constants.INVALID_TICKET_TYPE_REQUEST);
+               throw new InvalidPurchaseException(Constants.ZERO_TICKET_TYPE_REQUEST);
            }
 
            int[] totalPayAndSeats = calculateTotalPaymentAndSeats(ticketTypeRequests);
@@ -53,7 +53,7 @@ public class TicketServiceImpl implements TicketService {
         for (TicketTypeRequest ticketTypeRequest : ticketTypeRequests) {
             TicketTypeRequest.Type ticketType = ticketTypeRequest.getTicketType();
             int noOfTickets =ticketTypeRequest.getNoOfTickets();
-            if(ticketType!=null && noOfTickets>0 ) {
+            if(ticketType!=null && noOfTickets>=0 ) {
                 switch (ticketType) {
                     case INFANT:
                         infantCount += noOfTickets;
@@ -68,6 +68,10 @@ public class TicketServiceImpl implements TicketService {
                         break;
                 }
             }
+            //Stop processing the whole request to preserve integrity (i.e avoid processing only the valid content)
+            else{
+                throw new InvalidPurchaseException(Constants.INVALID_TICKET_TYPE_REQUEST_FOUND);
+            }
         }
         int totalTicketCount = adultCount+infantCount+childCount;
         if(totalTicketCount>MAX_PROCESSED_TICKET_LIMIT){
@@ -79,9 +83,7 @@ public class TicketServiceImpl implements TicketService {
         if (adultCount == 0) {
             throw new InvalidPurchaseException(Constants.ZERO_ADULT_TICKETS);
         }
-        /*
-          Added this condition assuming one adult can keep only one infant in his/her lap.
-         */
+        //Assuming one adult can keep only one infant in his/her lap.
         if (infantCount > adultCount) {
             throw new InvalidPurchaseException(Constants.MORE_INFANTS_THAN_ADULTS);
         }

@@ -26,12 +26,6 @@ public class TicketServiceImplTest {
   }
 
   @Test
-  public void purchaseTicketsOK2(){
-
-    ticketServiceImpl.purchaseTickets(1L, new TicketTypeRequest(TicketTypeRequest.Type.ADULT, 2),new TicketTypeRequest(null, 2));
-  }
-
-  @Test
   public void testPurchaseTickets1() throws InvalidPurchaseException {
 
     thrown.expect(InvalidPurchaseException.class);
@@ -96,5 +90,13 @@ public class TicketServiceImplTest {
     thrown.expect(InvalidPurchaseException.class);
     ticketServiceImpl.purchaseTickets(1L);
   }
+
+  @Test
+  public void purchaseTickets10(){
+
+    thrown.expect(InvalidPurchaseException.class);
+    ticketServiceImpl.purchaseTickets(1L, new TicketTypeRequest(TicketTypeRequest.Type.ADULT, 2),new TicketTypeRequest(null, 2));
+  }
+
 
 }
