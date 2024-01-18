@@ -5,20 +5,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import thirdparty.paymentgateway.TicketPaymentServiceImpl;
-import thirdparty.seatbooking.SeatReservationServiceImpl;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 public class TicketServiceImplTest {
-  @Mock
-    SeatReservationServiceImpl seatReservationService;
 
-  @Mock
-    TicketPaymentServiceImpl ticketPaymentService;
 
   @InjectMocks
   TicketServiceImpl ticketServiceImpl;
@@ -27,7 +18,6 @@ public class TicketServiceImplTest {
   @Before
   public void setUp(){
        ticketServiceImpl = new TicketServiceImpl();
-      initMocks(this);
     }
   @Test
     public void purchaseTicketsOK1(){
